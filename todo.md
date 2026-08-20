@@ -33,5 +33,12 @@
 - [x] Show the matching Ceramic Wash or Foam Shampoo muted video in product detail views instead of the fallback logo
 - [x] Use Netlify-safe same-origin product video paths in ProductDetail and product cards
 - [x] Re-verify both product detail routes and push/repackage the corrected detail-media fix
-- [ ] Push the final ProductDetail same-origin video-path fix to machavinay33/Foamx and verify the remote branch
-- [ ] Recreate the downloadable ZIP after the final ProductDetail media fix and verify the product media files
+- [x] Push the final ProductDetail same-origin video-path fix to `machavinay33/Foamx` and verify the remote branch
+- [x] Recreate the downloadable ZIP after the final ProductDetail media fix and verify the product media files
+- [x] Restore reliable hero and showcase video playback with same-origin and managed-storage fallback handling
+- [x] Fix product detail media so product-specific videos render reliably in the deployed site
+- [x] Add a visible Cancel/Back control to product details and add tasteful scroll-reveal animations
+- [x] Verify the complete update and push it to machavinay33/Foamx
+- [ ] Add verified same-origin hero and showcase video files or use only confirmed deployable video URLs
+- [ ] Add a loading state to ProductDetail before product data resolves
+- [ ] Commit, push, and remotely verify the latest combined FOAMX fix
