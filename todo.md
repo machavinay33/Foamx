@@ -28,5 +28,10 @@
 - [x] Unpack the verified FOAMX source archive and push the complete source and bundled assets to machavinay33/Foamx
 - [x] Fix Netlify product media and logo loading by serving bundled assets from deployable public paths
 - [x] Rebuild, verify, push, and repackage the corrected FOAMX source
-- [ ] Recreate the downloadable ZIP after the Netlify media-path and logo PNG fix, verifying client/public/media assets
-- [ ] Commit and push the Netlify media fix to machavinay33/Foamx and verify the remote branch
+- [x] Recreate the downloadable ZIP after the Netlify media-path and logo PNG fix, verifying client/public/media assets
+- [x] Commit and push the Netlify media fix to machavinay33/Foamx and verify the remote branch
+- [x] Show the matching Ceramic Wash or Foam Shampoo muted video in product detail views instead of the fallback logo
+- [x] Use Netlify-safe same-origin product video paths in ProductDetail and product cards
+- [x] Re-verify both product detail routes and push/repackage the corrected detail-media fix
+- [ ] Push the final ProductDetail same-origin video-path fix to machavinay33/Foamx and verify the remote branch
+- [ ] Recreate the downloadable ZIP after the final ProductDetail media fix and verify the product media files

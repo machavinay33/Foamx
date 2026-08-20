@@ -6,8 +6,8 @@ import { Badge } from '@/components/ui/badge';
 import { getOffers, getProducts, submitOrder, supabase, type Offer, type Product } from '@/lib/supabase';
 import { toast } from 'sonner';
 
-const videoUrl = '/media/foamx-hero.mp4';
-const showcaseVideoUrl = '/media/foamx-showcase.mp4';
+const videoUrl = '/manus-storage/foamx_ad_landscape_a61cc867.mp4';
+const showcaseVideoUrl = '/manus-storage/a7a81051-78eb-4ebb-98c3-e4619cb77002_e2642fec.mp4';
 const productVideoUrls: Record<string, string> = {
   'ceramic-wash': '/media/ceramic-wash.mp4',
   'foam-shampoo': '/media/foam-shampoo.mp4',
