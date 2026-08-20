@@ -1,0 +1,27 @@
+# Project TODO
+
+- [x] Configure a Netlify-ready build with SPA redirects and deployment documentation
+- [x] Add Supabase environment variable setup and SQL schema for products, offers, orders, order items, and role-gated admin access
+- [x] Upload and wire the supplied FOAMX logo and promotional video assets
+- [x] Build dark premium responsive navigation, hero video, brand storytelling, and CTA sections
+- [x] Build product catalog grid with product data sourced from the application backend
+- [x] Build product detail pages with gallery, description, pricing, and Add to Cart
+- [x] Build cart with quantity controls, item removal, totals, and checkout entry
+- [x] Build offline order booking form and persist submitted orders to Supabase
+- [x] Build offers and promotions section with empty and active states
+- [x] Build contact section with phone +91 73067 07640 and Instagram instagram.com/_foamx_
+- [x] Build role-gated admin dashboard for viewing orders and updating order status
+- [x] Add Vitest coverage for cart calculations, order validation, and admin authorization
+- [x] Run type checks, tests, production build, and responsive visual verification
+- [x] Package the complete source code and setup files as a single downloadable ZIP
+- [x] Replace public browser fallback catalog with a backend-driven Supabase product flow for production mode
+- [x] Add dedicated product detail routes/pages with gallery support
+- [x] Replace demo admin gate with real Supabase Auth session and profile role check
+- [x] Include client unit tests in Vitest discovery and add explicit admin authorization coverage
+- [x] Add product detail not-found handling and authenticated post-login admin session handling
+- [x] Remove production reliance on fallback catalog data while retaining preview-only resilience
+- [x] Add the newly supplied promotional video as a large attractive autoplay section and include it in the source package
+- [x] Fix hero and showcase background video playback and increase video brightness
+- [x] Add supplied Ceramic Wash and Foam Shampoo videos as muted autoplay product visuals
+- [x] Verify updated media behavior and create the refreshed source ZIP
+- [ ] Rebuild the downloadable ZIP with all supplied FOAMX logo and video binaries included under a package assets folder

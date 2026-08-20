@@ -1,0 +1,18 @@
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800;900&family=DM+Sans:wght@400;500;600;700&display=swap');
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+:root { font-family: 'DM Sans', sans-serif; color: #f5f3ef; background: #08090a; font-synthesis: none; text-rendering: optimizeLegibility; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; background: #08090a; }
+body { margin: 0; min-width: 320px; background: #08090a; }
+button, a, input, textarea, select { transition: color .18s ease, background-color .18s ease, border-color .18s ease, transform .18s ease, opacity .18s ease; }
+button:active { transform: scale(.98); }
+button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible { outline: 2px solid #d4a94d; outline-offset: 3px; }
+.font-display { font-family: 'Barlow Condensed', sans-serif; letter-spacing: -.02em; }
+.eyebrow { color: #d4a94d; font-size: 10px; font-weight: 700; letter-spacing: .28em; text-transform: uppercase; }
+.field { width: 100%; border: 1px solid rgba(255,255,255,.14); background: rgba(255,255,255,.04); padding: 15px 16px; color: #f5f3ef; font: inherit; font-size: 13px; }
+.field::placeholder { color: rgba(255,255,255,.35); }
+.field:focus { border-color: #d4a94d; outline: none; }
+::selection { background: #d4a94d; color: #08090a; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; } }

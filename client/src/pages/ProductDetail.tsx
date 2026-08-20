@@ -1,0 +1,16 @@
+import { useEffect, useState } from 'react';
+import { ArrowLeft, ShoppingBag } from 'lucide-react';
+import { useLocation, useRoute } from 'wouter';
+import { Button } from '@/components/ui/button';
+import { getProducts, type Product } from '@/lib/supabase';
+
+export default function ProductDetail() {
+  const [, params] = useRoute('/products/:slug');
+  const [, navigate] = useLocation();
+  const [product, setProduct] = useState<Product | null>(null);
+  const [selected, setSelected] = useState(0);
+  useEffect(() => { getProducts().then(items => setProduct(items.find(item => item.slug === params?.slug) ?? null)); }, [params?.slug]);
+  if (!product) return <main className="grid min-h-screen place-items-center bg-[#08090a] px-5 text-center text-white"><div><p className="eyebrow">FOAMX / 404</p><h1 className="mt-4 font-display text-5xl font-black uppercase">Product not found.</h1><p className="mt-3 text-sm text-white/50">This formula may be inactive or no longer available.</p><Button onClick={() => navigate('/')} className="mt-6 rounded-none bg-[#d4a94d] text-xs font-black uppercase tracking-[.15em] text-black">Return home</Button></div></main>;
+  const gallery = product.gallery?.length ? product.gallery : [product.image_url];
+  return <main className="min-h-screen bg-[#08090a] px-5 py-10 text-white lg:px-8"><div className="mx-auto max-w-6xl"><button onClick={() => navigate('/')} className="mb-10 flex items-center gap-2 text-xs uppercase tracking-[.2em] text-white/50 hover:text-[#d4a94d]"><ArrowLeft size={15}/> Back to FOAMX</button><div className="grid gap-10 md:grid-cols-2"><div><div className="aspect-square bg-[#e9e9e7] p-10"><img src={gallery[selected]} className="h-full w-full object-contain mix-blend-multiply" alt={product.name}/></div><div className="mt-4 flex gap-3">{gallery.map((image, index) => <button key={image + index} onClick={() => setSelected(index)} className={`h-20 w-20 bg-[#e9e9e7] p-2 ${selected === index ? 'ring-2 ring-[#d4a94d]' : ''}`}><img src={image} className="h-full w-full object-contain mix-blend-multiply" alt=""/></button>)}</div></div><div className="flex flex-col justify-center"><p className="eyebrow">FOAMX / Product detail</p><h1 className="mt-4 font-display text-6xl font-black uppercase leading-none">{product.name}</h1><p className="mt-6 text-base leading-8 text-white/55">{product.description}</p><div className="my-8 flex items-center justify-between border-y border-white/10 py-6"><span className="text-xs uppercase tracking-[.2em] text-white/40">Current price</span><span className="font-display text-4xl font-bold text-[#d4a94d]">₹{product.price.toLocaleString('en-IN')}</span></div><Button onClick={() => { const items = JSON.parse(localStorage.getItem('foamx-cart') ?? '[]'); const existing = items.find((item: Product & {quantity:number}) => item.id === product.id); localStorage.setItem('foamx-cart', JSON.stringify(existing ? items.map((item: Product & {quantity:number}) => item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item) : [...items, { ...product, quantity: 1 }])); navigate('/'); }} className="rounded-none bg-[#d4a94d] py-6 text-xs font-black uppercase tracking-[.15em] text-black">Add to cart <ShoppingBag size={15} className="ml-2"/></Button></div></div></div></main>;
+}
