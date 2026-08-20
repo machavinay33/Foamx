@@ -6,13 +6,13 @@ import { Badge } from '@/components/ui/badge';
 import { getOffers, getProducts, submitOrder, supabase, type Offer, type Product } from '@/lib/supabase';
 import { toast } from 'sonner';
 
-const videoUrl = '/manus-storage/foamx_ad_landscape_5cf38f5f.mp4';
-const showcaseVideoUrl = '/manus-storage/foamx_brand_showcase_d455d4c3.mp4';
+const videoUrl = '/media/foamx-hero.mp4';
+const showcaseVideoUrl = '/media/foamx-showcase.mp4';
 const productVideoUrls: Record<string, string> = {
-  'ceramic-wash': '/manus-storage/foamx_ceramic_wash_3669fd5f.mp4',
-  'foam-shampoo': '/manus-storage/foamx_foam_shampoo_d7783515.mp4',
+  'ceramic-wash': '/media/ceramic-wash.mp4',
+  'foam-shampoo': '/media/foam-shampoo.mp4',
 };
-const logoUrl = '/manus-storage/foamx-logo_a3478e2a.heic';
+const logoUrl = '/media/foamx-logo.png';
 type CartItem = Product & { quantity: number };
 
 function money(value: number) { return `₹${value.toLocaleString('en-IN')}`; }
