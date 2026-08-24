@@ -76,7 +76,10 @@ export default function Product3DViewer({ name, image, frames = [], compact = fa
     if (event.key === 'Home') resetRotation(event);
   };
 
-  const parallax = Math.sin((rotation.y * Math.PI) / 180) * 7;
+  const angle = (rotation.y * Math.PI) / 180;
+  const parallax = Math.sin(angle) * 7;
+  const visualYaw = Math.sin(angle) * 12;
+  const visualPitch = clamp(rotation.x, -9, 9);
   const viewLabel = frames.length > 1 ? `View ${String(frameIndex + 1).padStart(3, '0')} / ${frames.length}` : '3D view';
   const activeImage = frames[frameIndex] ?? image;
 
@@ -96,7 +99,7 @@ export default function Product3DViewer({ name, image, frames = [], compact = fa
       <div
         className="product-viewer__surface relative h-full w-full"
         style={{
-          transform: `translate3d(${parallax}px, 0, 0) rotateX(${rotation.x}deg) scale(${dragging ? 1.035 : 1.02})`,
+          transform: `translate3d(${parallax}px, 0, 0) rotateX(${visualPitch}deg) rotateY(${visualYaw}deg) scale(${dragging ? 1.075 : 1.06})`,
           transition: dragging ? 'none' : 'transform 180ms cubic-bezier(.23,1,.32,1)',
         }}
       >
