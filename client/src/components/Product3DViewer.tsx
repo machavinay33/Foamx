@@ -193,7 +193,7 @@ export default function Product3DViewer({ name, image, frames = [], compact = fa
     const dy = event.clientY - dragRef.current.startY;
     const timeDelta = Math.max(8, now - dragRef.current.lastTime);
     const viewerWidth = Math.max(viewerRef.current?.clientWidth ?? 360, 320);
-    const turnPerPixel = 360 / viewerWidth;
+    const turnPerPixel = 180 / viewerWidth;
     velocityRef.current = (((event.clientX - dragRef.current.lastX) * 0.95) / timeDelta) * 16 * turnPerPixel;
     dragRef.current.lastX = event.clientX;
     dragRef.current.lastTime = now;
