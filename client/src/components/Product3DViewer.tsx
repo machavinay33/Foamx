@@ -39,8 +39,11 @@ export default function Product3DViewer({ name, image, frames = [], compact = fa
   const panRef = useRef<Point>({ x: 0, y: 0 });
   const velocityRef = useRef(0);
   const inertiaFrameRef = useRef<number | null>(null);
+  const rotationFrameRef = useRef<number | null>(null);
+  const pendingRotationRef = useRef<{ turn: number; pitch: number } | null>(null);
   const [rotation, setRotation] = useState<Rotation>({ turn: 0, pitch: -1 });
   const [frameIndex, setFrameIndex] = useState(0);
+  const [frameBlend, setFrameBlend] = useState(0);
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState<Point>({ x: 0, y: 0 });
   const [dragging, setDragging] = useState(false);
@@ -92,6 +95,7 @@ export default function Product3DViewer({ name, image, frames = [], compact = fa
 
   useEffect(() => () => {
     if (inertiaFrameRef.current !== null) cancelAnimationFrame(inertiaFrameRef.current);
+    if (rotationFrameRef.current !== null) cancelAnimationFrame(rotationFrameRef.current);
   }, []);
 
   const commitRotation = (turn: number, pitch: number) => {
@@ -100,7 +104,12 @@ export default function Product3DViewer({ name, image, frames = [], compact = fa
     turnRef.current = nextTurn;
     pitchRef.current = nextPitch;
     setRotation({ turn: nextTurn, pitch: nextPitch });
-    if (frames.length > 1) setFrameIndex(Math.floor((nextTurn / 360) * frames.length) % frames.length);
+    if (frames.length > 1) {
+      const framePosition = (nextTurn / 360) * frames.length;
+      const baseFrame = Math.floor(framePosition);
+      setFrameIndex(baseFrame % frames.length);
+      setFrameBlend(framePosition - baseFrame);
+    }
   };
 
   const commitZoom = (nextZoom: number, nextPan = panRef.current) => {
@@ -118,6 +127,17 @@ export default function Product3DViewer({ name, image, frames = [], compact = fa
   const stopInertia = () => {
     if (inertiaFrameRef.current !== null) cancelAnimationFrame(inertiaFrameRef.current);
     inertiaFrameRef.current = null;
+  };
+
+  const scheduleRotation = (turn: number, pitch: number) => {
+    pendingRotationRef.current = { turn, pitch };
+    if (rotationFrameRef.current !== null) return;
+    rotationFrameRef.current = requestAnimationFrame(() => {
+      rotationFrameRef.current = null;
+      const pending = pendingRotationRef.current;
+      pendingRotationRef.current = null;
+      if (pending) commitRotation(pending.turn, pending.pitch);
+    });
   };
 
   const runInertia = () => {
@@ -172,14 +192,16 @@ export default function Product3DViewer({ name, image, frames = [], compact = fa
     const dx = event.clientX - dragRef.current.startX;
     const dy = event.clientY - dragRef.current.startY;
     const timeDelta = Math.max(8, now - dragRef.current.lastTime);
-    velocityRef.current = ((event.clientX - dragRef.current.lastX) * 0.95) / timeDelta;
+    const viewerWidth = Math.max(viewerRef.current?.clientWidth ?? 360, 320);
+    const turnPerPixel = 360 / viewerWidth;
+    velocityRef.current = (((event.clientX - dragRef.current.lastX) * 0.95) / timeDelta) * 16 * turnPerPixel;
     dragRef.current.lastX = event.clientX;
     dragRef.current.lastTime = now;
     if (zoomRef.current > 1.08 && Math.abs(dy) > Math.abs(dx) * 0.8) {
       commitZoom(zoomRef.current, { x: dragRef.current.startPan.x + dx, y: dragRef.current.startPan.y + dy });
       return;
     }
-    commitRotation(dragRef.current.startTurn + dx * 1.2, dragRef.current.startPitch - dy * 0.1);
+    scheduleRotation(dragRef.current.startTurn + dx * turnPerPixel, dragRef.current.startPitch - dy * 0.1);
   };
 
   const handlePointerUp = (event: React.PointerEvent<HTMLDivElement>) => {
@@ -238,6 +260,8 @@ export default function Product3DViewer({ name, image, frames = [], compact = fa
   };
 
   const activeImage = visible ? (frames[frameIndex] ?? image) : image;
+  const nextFrameIndex = frames.length > 1 ? (frameIndex + 1) % frames.length : frameIndex;
+  const nextImage = visible ? (frames[nextFrameIndex] ?? activeImage) : activeImage;
   const angleRadians = (rotation.turn * Math.PI) / 180;
   const visualYaw = Math.sin(angleRadians) * 5;
   const angle = Math.round(rotation.turn);
@@ -256,12 +280,13 @@ export default function Product3DViewer({ name, image, frames = [], compact = fa
       onWheel={handleWheel}
       onDoubleClick={handleDoubleClick}
       onKeyDown={handleKeyDown}
-      className={`product-viewer relative h-full w-full overflow-hidden bg-[#08090a] outline-none ${dragging ? 'is-dragging' : ''}`}
+      className={`product-viewer relative h-full w-full overflow-hidden bg-[#f8f8f6] outline-none ${dragging ? 'is-dragging' : ''}`}
       style={{ touchAction: 'none' }}
     >
-      <div className="product-viewer__surface relative h-full w-full" style={{ transform: `perspective(1100px) translate3d(${pan.x}px, ${pan.y}px, 0) rotateX(${rotation.pitch}deg) rotateY(${visualYaw}deg) scale(${zoom * (dragging ? 1.025 : 1.015)})`, transition: dragging ? 'none' : 'transform 180ms cubic-bezier(.23,1,.32,1)' }}>
+      <div className="product-viewer__surface relative h-full w-full">
         <div className="product-viewer__media absolute inset-0 grid place-items-center p-3 sm:p-5">
-          <img src={activeImage} alt={name} draggable={false} decoding="async" loading={visible && frameIndex === 0 ? 'eager' : 'lazy'} className="h-full w-full object-contain brightness-110" />
+          <img src={activeImage} alt={name} draggable={false} decoding="async" loading={visible && frameIndex === 0 ? 'eager' : 'lazy'} className="absolute inset-0 h-full w-full object-contain brightness-110" style={{ opacity: 1 - frameBlend, transform: `perspective(1100px) translate3d(${pan.x}px, ${pan.y}px, 0) rotateX(${rotation.pitch}deg) rotateY(${visualYaw}deg) scale(${zoom * (dragging ? 1.025 : 1.015)})`, transition: dragging ? 'none' : 'transform 180ms cubic-bezier(.23,1,.32,1)' }} />
+          {frames.length > 1 && <img src={nextImage} alt="" aria-hidden="true" draggable={false} decoding="async" loading="lazy" className="absolute inset-0 h-full w-full object-contain brightness-110" style={{ opacity: frameBlend, transform: `perspective(1100px) translate3d(${pan.x}px, ${pan.y}px, 0) rotateX(${rotation.pitch}deg) rotateY(${visualYaw}deg) scale(${zoom * (dragging ? 1.025 : 1.015)})`, transition: dragging ? 'none' : 'transform 180ms cubic-bezier(.23,1,.32,1)' }} />}
         </div>
         <div className="product-viewer__shine pointer-events-none absolute inset-0" />
         <div className="product-viewer__depth pointer-events-none absolute inset-x-[12%] bottom-[7%] h-[12%] rounded-full" />

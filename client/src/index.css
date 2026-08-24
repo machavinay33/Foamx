@@ -15,13 +15,13 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .field::placeholder { color: rgba(255,255,255,.35); }
 .field:focus { border-color: #d4a94d; outline: none; }
 ::selection { background: #d4a94d; color: #08090a; }
-.product-viewer { cursor: grab; perspective: 1100px; isolation: isolate; user-select: none; }
+.product-viewer { cursor: grab; perspective: 1100px; isolation: isolate; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; background: #f8f8f6; }
 .product-viewer.is-dragging { cursor: grabbing; }
 .product-viewer:focus-visible { box-shadow: inset 0 0 0 2px #d4a94d; }
-.product-viewer__surface { transform-style: preserve-3d; will-change: transform; }
-.product-viewer__media { transform: translateZ(18px); backface-visibility: hidden; }
-.product-viewer__shine { transform: translateZ(34px); background: radial-gradient(circle at 30% 22%, rgba(255,255,255,.28), transparent 26%), linear-gradient(112deg, transparent 28%, rgba(255,255,255,.1) 48%, transparent 62%); mix-blend-mode: screen; opacity: .55; }
-.product-viewer__depth { transform: translateZ(-24px) rotateX(70deg); background: rgba(0,0,0,.38); filter: blur(16px); }
+.product-viewer__surface { position: relative; width: 100%; height: 100%; overflow: hidden; background: #f8f8f6; }
+.product-viewer__media { backface-visibility: hidden; }
+.product-viewer__shine { background: radial-gradient(circle at 30% 22%, rgba(255,255,255,.32), transparent 26%), linear-gradient(112deg, transparent 28%, rgba(255,255,255,.08) 48%, transparent 62%); mix-blend-mode: screen; opacity: .55; }
+.product-viewer__depth { background: rgba(0,0,0,.22); filter: blur(16px); }
 .hero-viewer { cursor: grab; perspective: 1100px; isolation: isolate; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; }
 .hero-viewer.is-dragging { cursor: grabbing; }
 .hero-viewer:focus-visible { box-shadow: inset 0 0 0 2px #d4a94d; }
