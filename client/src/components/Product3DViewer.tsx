@@ -238,6 +238,8 @@ export default function Product3DViewer({ name, image, frames = [], compact = fa
   };
 
   const activeImage = visible ? (frames[frameIndex] ?? image) : image;
+  const angleRadians = (rotation.turn * Math.PI) / 180;
+  const visualYaw = Math.sin(angleRadians) * 5;
   const angle = Math.round(rotation.turn);
   const viewLabel = frames.length > 1 ? `360° / ${String(frameIndex + 1).padStart(2, '0')} of ${frames.length}` : '360° view';
 
@@ -257,9 +259,9 @@ export default function Product3DViewer({ name, image, frames = [], compact = fa
       className={`product-viewer relative h-full w-full overflow-hidden bg-[#08090a] outline-none ${dragging ? 'is-dragging' : ''}`}
       style={{ touchAction: 'none' }}
     >
-      <div className="product-viewer__surface relative h-full w-full" style={{ transform: `perspective(1100px) translate3d(${pan.x}px, ${pan.y}px, 0) rotateX(${rotation.pitch}deg) scale(${zoom * (dragging ? 1.025 : 1.015)})`, transition: dragging ? 'none' : 'transform 180ms cubic-bezier(.23,1,.32,1)' }}>
-        <div className="product-viewer__media absolute inset-0">
-          <img src={activeImage} alt={name} draggable={false} decoding="async" loading={visible && frameIndex === 0 ? 'eager' : 'lazy'} className="h-full w-full object-cover brightness-110" />
+      <div className="product-viewer__surface relative h-full w-full" style={{ transform: `perspective(1100px) translate3d(${pan.x}px, ${pan.y}px, 0) rotateX(${rotation.pitch}deg) rotateY(${visualYaw}deg) scale(${zoom * (dragging ? 1.025 : 1.015)})`, transition: dragging ? 'none' : 'transform 180ms cubic-bezier(.23,1,.32,1)' }}>
+        <div className="product-viewer__media absolute inset-0 grid place-items-center p-3 sm:p-5">
+          <img src={activeImage} alt={name} draggable={false} decoding="async" loading={visible && frameIndex === 0 ? 'eager' : 'lazy'} className="h-full w-full object-contain brightness-110" />
         </div>
         <div className="product-viewer__shine pointer-events-none absolute inset-0" />
         <div className="product-viewer__depth pointer-events-none absolute inset-x-[12%] bottom-[7%] h-[12%] rounded-full" />
