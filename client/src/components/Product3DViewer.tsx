@@ -1,9 +1,10 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { RotateCcw } from 'lucide-react';
 
 type Product3DViewerProps = {
   name: string;
   image: string;
+  frames?: string[];
   compact?: boolean;
 };
 
@@ -11,12 +12,26 @@ type Rotation = { x: number; y: number };
 
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
 
-export default function Product3DViewer({ name, image, compact = false }: Product3DViewerProps) {
+export default function Product3DViewer({ name, image, frames = [], compact = false }: Product3DViewerProps) {
   const dragRef = useRef({ pointerId: -1, startX: 0, startY: 0, rotation: { x: -3, y: 0 } as Rotation });
   const [rotation, setRotation] = useState<Rotation>({ x: -3, y: 0 });
+  const [frameIndex, setFrameIndex] = useState(0);
   const [dragging, setDragging] = useState(false);
 
-  const updateRotation = (next: Rotation) => setRotation(next);
+  useEffect(() => {
+    frames.forEach(src => {
+      const preload = new Image();
+      preload.src = src;
+    });
+  }, [frames]);
+
+  const updateRotation = (next: Rotation) => {
+    setRotation(next);
+    if (frames.length > 1) {
+      const normalized = (next.y + 32) / 64;
+      setFrameIndex(Math.round(clamp(normalized, 0, 1) * (frames.length - 1)));
+    }
+  };
 
   const handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
     if ((event.target as HTMLElement).closest('button')) return;
@@ -44,6 +59,7 @@ export default function Product3DViewer({ name, image, compact = false }: Produc
 
   const resetRotation = (event?: React.MouseEvent | React.KeyboardEvent) => {
     event?.stopPropagation();
+    setFrameIndex(0);
     updateRotation({ x: -3, y: 0 });
   };
 
@@ -59,15 +75,15 @@ export default function Product3DViewer({ name, image, compact = false }: Produc
     if (event.key === 'Home') resetRotation(event);
   };
 
-  const normalizedRotation = Math.round(rotation.y);
-  const rotationLabel = normalizedRotation > 0 ? `+${normalizedRotation}°` : `${normalizedRotation}°`;
   const parallax = Math.sin((rotation.y * Math.PI) / 180) * 8;
+  const viewLabel = frames.length > 1 ? `View ${String(frameIndex + 1).padStart(2, '0')} / ${frames.length}` : '3D view';
+  const activeImage = frames[frameIndex] ?? image;
 
   return (
     <div
       role="group"
       tabIndex={0}
-      aria-label={`${name} interactive 3D product viewer. Drag left or right to rotate.`}
+      aria-label={`${name} interactive 3D product viewer. Drag left or right to rotate through product views.`}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
@@ -84,14 +100,14 @@ export default function Product3DViewer({ name, image, compact = false }: Produc
         }}
       >
         <div className="product-viewer__media absolute inset-0">
-          <img src={image} alt={name} draggable={false} className="h-full w-full object-cover brightness-110" />
+          <img src={activeImage} alt={name} draggable={false} className="h-full w-full object-cover brightness-110" />
         </div>
         <div className="product-viewer__shine pointer-events-none absolute inset-0" />
         <div className="product-viewer__depth pointer-events-none absolute inset-x-[12%] bottom-[7%] h-[12%] rounded-full" />
       </div>
       <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-center justify-between bg-gradient-to-t from-black/65 to-transparent px-4 pb-4 pt-12 text-[9px] font-bold uppercase tracking-[.18em] text-white/80">
         <span>{compact ? 'Drag to rotate' : 'Touch + drag to explore'}</span>
-        <span className="text-[#d4a94d]">{rotationLabel}</span>
+        <span className="text-[#d4a94d]">{viewLabel}</span>
       </div>
       <button
         type="button"

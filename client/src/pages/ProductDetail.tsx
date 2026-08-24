@@ -9,6 +9,10 @@ const productImageUrls: Record<string, string> = {
   'ceramic-wash': '/media/ceramic-wash-poster.jpg',
   'foam-shampoo': '/media/foam-shampoo-poster.jpg',
 };
+const productFrameSources: Record<string, string[]> = {
+  'ceramic-wash': Array.from({ length: 37 }, (_, index) => `/media/product-spin/ceramic-wash/frame-${String(index + 1).padStart(2, '0')}.jpg`),
+  'foam-shampoo': Array.from({ length: 38 }, (_, index) => `/media/product-spin/foam-shampoo/frame-${String(index + 1).padStart(2, '0')}.jpg`),
+};
 
 type GalleryMedia = { type: 'image'; sources: string[] };
 
@@ -55,7 +59,7 @@ export default function ProductDetail() {
         <div className="grid gap-10 md:grid-cols-2">
           <div>
             <div className="relative aspect-square overflow-hidden bg-[#e9e9e7]">
-              <Product3DViewer name={product.name} image={activeMedia.sources[0]} />
+              <Product3DViewer name={product.name} image={activeMedia.sources[0]} frames={productFrameSources[product.slug]} />
             </div>
             <div className="mt-4 flex gap-3 overflow-x-auto">
               {media.map((item, index) => <button key={`${item.sources[0]}-${index}`} onClick={() => setSelected(index)} aria-label={`View media ${index + 1}`} className={`relative h-20 w-20 shrink-0 overflow-hidden bg-[#e9e9e7] ${selected === index ? 'ring-2 ring-[#d4a94d]' : ''}`}><img src={item.sources[0]} className="h-full w-full object-cover" alt="" /></button>)}
