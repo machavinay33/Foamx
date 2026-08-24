@@ -11,8 +11,8 @@ const videoSources = ['/media/foamx-hero.mp4', '/manus-storage/foamx_ad_landscap
 const showcaseVideoSources = ['/media/foamx-showcase.mp4', '/manus-storage/a7a81051-78eb-4ebb-98c3-e4619cb77002_e2642fec.mp4', 'https://raw.githubusercontent.com/machavinay33/Foamx/main/client/public/media/foamx-showcase.mp4'];
 const productImageUrls: Record<string, string> = { 'ceramic-wash': '/media/ceramic-wash-poster.jpg', 'foam-shampoo': '/media/foam-shampoo-poster.jpg' };
 const productFrameSources: Record<string, string[]> = {
-  'ceramic-wash': Array.from({ length: 37 }, (_, index) => `/media/product-spin/ceramic-wash/frame-${String(index + 1).padStart(2, '0')}.jpg`),
-  'foam-shampoo': Array.from({ length: 38 }, (_, index) => `/media/product-spin/foam-shampoo/frame-${String(index + 1).padStart(2, '0')}.jpg`),
+  'ceramic-wash': Array.from({ length: 84 }, (_, index) => `/media/product-spin/ceramic-wash/frame-${String(index + 1).padStart(3, '0')}.webp`),
+  'foam-shampoo': Array.from({ length: 86 }, (_, index) => `/media/product-spin/foam-shampoo/frame-${String(index + 1).padStart(3, '0')}.webp`),
 };
 const logoUrl = '/media/foamx-logo.png';
 type CartItem = Product & { quantity: number };

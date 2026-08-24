@@ -10,8 +10,8 @@ const productImageUrls: Record<string, string> = {
   'foam-shampoo': '/media/foam-shampoo-poster.jpg',
 };
 const productFrameSources: Record<string, string[]> = {
-  'ceramic-wash': Array.from({ length: 37 }, (_, index) => `/media/product-spin/ceramic-wash/frame-${String(index + 1).padStart(2, '0')}.jpg`),
-  'foam-shampoo': Array.from({ length: 38 }, (_, index) => `/media/product-spin/foam-shampoo/frame-${String(index + 1).padStart(2, '0')}.jpg`),
+  'ceramic-wash': Array.from({ length: 84 }, (_, index) => `/media/product-spin/ceramic-wash/frame-${String(index + 1).padStart(3, '0')}.webp`),
+  'foam-shampoo': Array.from({ length: 86 }, (_, index) => `/media/product-spin/foam-shampoo/frame-${String(index + 1).padStart(3, '0')}.webp`),
 };
 
 type GalleryMedia = { type: 'image'; sources: string[] };
