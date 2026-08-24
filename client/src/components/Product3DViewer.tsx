@@ -3,9 +3,7 @@ import { RotateCcw } from 'lucide-react';
 
 type Product3DViewerProps = {
   name: string;
-  sources?: string[];
-  poster?: string;
-  image?: string;
+  image: string;
   compact?: boolean;
 };
 
@@ -13,35 +11,18 @@ type Rotation = { x: number; y: number };
 
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
 
-export default function Product3DViewer({ name, sources = [], poster, image, compact = false }: Product3DViewerProps) {
-  const viewerRef = useRef<HTMLDivElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
+export default function Product3DViewer({ name, image, compact = false }: Product3DViewerProps) {
   const dragRef = useRef({ pointerId: -1, startX: 0, startY: 0, rotation: { x: -3, y: 0 } as Rotation });
-  const [sourceIndex, setSourceIndex] = useState(0);
   const [rotation, setRotation] = useState<Rotation>({ x: -3, y: 0 });
   const [dragging, setDragging] = useState(false);
 
-  const activeSource = sources[Math.min(sourceIndex, Math.max(0, sources.length - 1))];
-  const hasVideo = Boolean(activeSource);
-
-  const scrubVideo = (nextRotation: Rotation) => {
-    const video = videoRef.current;
-    if (!video || !Number.isFinite(video.duration) || video.duration <= 0) return;
-    const normalized = ((nextRotation.y % 360) + 360) % 360;
-    video.currentTime = (normalized / 360) * video.duration;
-  };
-
-  const updateRotation = (next: Rotation) => {
-    setRotation(next);
-    scrubVideo(next);
-  };
+  const updateRotation = (next: Rotation) => setRotation(next);
 
   const handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
     if ((event.target as HTMLElement).closest('button')) return;
     event.currentTarget.setPointerCapture(event.pointerId);
     dragRef.current = { pointerId: event.pointerId, startX: event.clientX, startY: event.clientY, rotation };
     setDragging(true);
-    videoRef.current?.pause();
   };
 
   const handlePointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
@@ -50,7 +31,7 @@ export default function Product3DViewer({ name, sources = [], poster, image, com
     const dy = event.clientY - dragRef.current.startY;
     updateRotation({
       x: clamp(dragRef.current.rotation.x - dy * 0.16, -26, 26),
-      y: dragRef.current.rotation.y + dx * 0.35,
+      y: clamp(dragRef.current.rotation.y + dx * 0.35, -32, 32),
     });
   };
 
@@ -59,7 +40,6 @@ export default function Product3DViewer({ name, sources = [], poster, image, com
     if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
     dragRef.current.pointerId = -1;
     setDragging(false);
-    if (hasVideo) void videoRef.current?.play().catch(() => undefined);
   };
 
   const resetRotation = (event?: React.MouseEvent | React.KeyboardEvent) => {
@@ -73,15 +53,18 @@ export default function Product3DViewer({ name, sources = [], poster, image, com
       event.preventDefault();
       updateRotation({
         x: clamp(rotation.x + (event.key === 'ArrowUp' ? -step : event.key === 'ArrowDown' ? step : 0), -26, 26),
-        y: rotation.y + (event.key === 'ArrowLeft' ? -step : event.key === 'ArrowRight' ? step : 0),
+        y: clamp(rotation.y + (event.key === 'ArrowLeft' ? -step : event.key === 'ArrowRight' ? step : 0), -32, 32),
       });
     }
     if (event.key === 'Home') resetRotation(event);
   };
 
+  const normalizedRotation = Math.round(rotation.y);
+  const rotationLabel = normalizedRotation > 0 ? `+${normalizedRotation}°` : `${normalizedRotation}°`;
+  const parallax = Math.sin((rotation.y * Math.PI) / 180) * 8;
+
   return (
     <div
-      ref={viewerRef}
       role="group"
       tabIndex={0}
       aria-label={`${name} interactive 3D product viewer. Drag left or right to rotate.`}
@@ -96,38 +79,19 @@ export default function Product3DViewer({ name, sources = [], poster, image, com
       <div
         className="product-viewer__surface relative h-full w-full"
         style={{
-          transform: `perspective(900px) rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`,
+          transform: `perspective(900px) translateX(${parallax}px) rotateX(${rotation.x}deg) rotateY(${rotation.y}deg) scale(${dragging ? 1.015 : 1})`,
           transition: dragging ? 'none' : 'transform 180ms cubic-bezier(.23,1,.32,1)',
         }}
       >
         <div className="product-viewer__media absolute inset-0">
-          {hasVideo ? (
-            <video
-              ref={videoRef}
-              autoPlay
-              muted
-              loop
-              playsInline
-              preload="metadata"
-              poster={poster}
-              onLoadedMetadata={event => scrubVideo(rotation)}
-              onError={() => setSourceIndex(index => Math.min(index + 1, sources.length - 1))}
-              className="h-full w-full object-cover brightness-110"
-            >
-              <source src={activeSource} type="video/mp4" />
-            </video>
-          ) : image ? (
-            <img src={image} alt={name} className="h-full w-full object-contain p-8 mix-blend-multiply" />
-          ) : poster ? (
-            <img src={poster} alt={name} className="h-full w-full object-cover" />
-          ) : null}
+          <img src={image} alt={name} draggable={false} className="h-full w-full object-cover brightness-110" />
         </div>
         <div className="product-viewer__shine pointer-events-none absolute inset-0" />
         <div className="product-viewer__depth pointer-events-none absolute inset-x-[12%] bottom-[7%] h-[12%] rounded-full" />
       </div>
       <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-center justify-between bg-gradient-to-t from-black/65 to-transparent px-4 pb-4 pt-12 text-[9px] font-bold uppercase tracking-[.18em] text-white/80">
         <span>{compact ? 'Drag to rotate' : 'Touch + drag to explore'}</span>
-        <span className="text-[#d4a94d]">{Math.round(((rotation.y % 360) + 360) % 360)}°</span>
+        <span className="text-[#d4a94d]">{rotationLabel}</span>
       </div>
       <button
         type="button"
